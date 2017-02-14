@@ -13,33 +13,18 @@ namespace Microsoft.AspNetCore.Server.Kestrel.FunctionalTests
     {
         private static readonly Lazy<bool> _ipv6Supported = new Lazy<bool>(CanBindToIPv6Address);
 
-        public bool IsMet
-        {
-            get
-            {
-                return _ipv6Supported.Value;
-            }
-        }
+        public bool IsMet => _ipv6Supported.Value;
 
-        public string SkipReason
-        {
-            get
-            {
-                return "No IPv6 addresses with scope IDs were found on the host.";
-            }
-        }
+        public string SkipReason => "No IPv6 addresses with scope IDs were found on the host.";
 
         private static bool CanBindToIPv6Address()
         {
             try
             {
                 return NetworkInterface.GetAllNetworkInterfaces()
-                    .Where(i => i.OperationalStatus == OperationalStatus.Up)
-                    .SelectMany(i => i.GetIPProperties().UnicastAddresses)
-                    .Select(a => a.Address)
-                    .Where(ip => ip.AddressFamily == AddressFamily.InterNetworkV6)
-                    .Where(ip => ip.ScopeId != 0)
-                    .Any();
+                    .Where(iface => iface.OperationalStatus == OperationalStatus.Up)
+                    .SelectMany(iface => iface.GetIPProperties().UnicastAddresses)
+                    .Any(addrInfo => addrInfo.Address.AddressFamily == AddressFamily.InterNetworkV6 && addrInfo.Address.ScopeId != 0);
             }
             catch (SocketException)
             {
