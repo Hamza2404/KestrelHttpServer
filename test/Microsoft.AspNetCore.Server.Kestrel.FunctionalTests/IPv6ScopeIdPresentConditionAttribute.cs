@@ -11,13 +11,13 @@ namespace Microsoft.AspNetCore.Server.Kestrel.FunctionalTests
 {
     public class IPv6ScopeIdPresentConditionAttribute : Attribute, ITestCondition
     {
-        private static readonly Lazy<bool> _ipv6Supported = new Lazy<bool>(CanBindToIPv6Address);
+        private static readonly Lazy<bool> _ipv6Supported = new Lazy<bool>(IPv6ScopeIdAddressPresent);
 
         public bool IsMet => _ipv6Supported.Value;
 
         public string SkipReason => "No IPv6 addresses with scope IDs were found on the host.";
 
-        private static bool CanBindToIPv6Address()
+        private static bool IPv6ScopeIdAddressPresent()
         {
             try
             {
